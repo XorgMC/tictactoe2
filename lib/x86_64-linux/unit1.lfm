@@ -1,0 +1,181 @@
+object Form1: TForm1
+  Left = 156
+  Height = 603
+  Top = 92
+  Width = 809
+  Caption = 'Form1'
+  ClientHeight = 603
+  ClientWidth = 809
+  OnCreate = FormCreate
+  LCLVersion = '1.8.2.0'
+  object GroupBox1: TGroupBox
+    Left = 232
+    Height = 560
+    Top = 0
+    Width = 568
+    Caption = 'Spielbrett'
+    ClientHeight = 542
+    ClientWidth = 566
+    TabOrder = 0
+    object Button1: TButton
+      Left = 72
+      Height = 150
+      Top = 40
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 0
+    end
+    object Button2: TButton
+      Left = 232
+      Height = 150
+      Top = 40
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 1
+    end
+    object Button3: TButton
+      Left = 392
+      Height = 150
+      Top = 40
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 2
+    end
+    object Button4: TButton
+      Left = 72
+      Height = 150
+      Top = 200
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 3
+    end
+    object Button5: TButton
+      Left = 232
+      Height = 150
+      Top = 200
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 4
+    end
+    object Button6: TButton
+      Left = 392
+      Height = 150
+      Top = 200
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 5
+    end
+    object Button7: TButton
+      Left = 72
+      Height = 150
+      Top = 360
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 6
+    end
+    object Button8: TButton
+      Left = 232
+      Height = 150
+      Top = 360
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 7
+    end
+    object Button9: TButton
+      Left = 392
+      Height = 150
+      Top = 360
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 8
+    end
+    object grdA: TLabel
+      Left = 72
+      Height = 25
+      Top = 6
+      Width = 150
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'A'
+      ParentColor = False
+    end
+    object grdB: TLabel
+      Left = 232
+      Height = 25
+      Top = 6
+      Width = 150
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'B'
+      ParentColor = False
+    end
+    object grdC: TLabel
+      Left = 392
+      Height = 25
+      Top = 6
+      Width = 150
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'C'
+      ParentColor = False
+    end
+    object grd1: TLabel
+      Left = 8
+      Height = 25
+      Top = 96
+      Width = 56
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '1'
+      ParentColor = False
+    end
+    object grd2: TLabel
+      Left = 8
+      Height = 25
+      Top = 264
+      Width = 56
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '2'
+      ParentColor = False
+    end
+    object grd3: TLabel
+      Left = 8
+      Height = 25
+      Top = 424
+      Width = 56
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '3'
+      ParentColor = False
+    end
+  end
+  object cmdReset: TButton
+    Left = 87
+    Height = 38
+    Top = 102
+    Width = 113
+    Caption = 'Reset'
+    OnClick = cmdResetClick
+    TabOrder = 1
+  end
+  object logBox: TListBox
+    Left = 8
+    Height = 328
+    Top = 232
+    Width = 208
+    ItemHeight = 0
+    ScrollWidth = 206
+    TabOrder = 2
+    TopIndex = -1
+  end
+  object Button10: TButton
+    Left = 73
+    Height = 25
+    Top = 185
+    Width = 75
+    Caption = 'Button10'
+    OnClick = Button10Click
+    TabOrder = 3
+  end
+end
