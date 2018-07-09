@@ -69,6 +69,7 @@ type
     procedure InitCC();
     function shallRestartGame(): boolean;
     procedure resetGame();
+    procedure log(msg: String);
   public
 
   end;
@@ -196,10 +197,10 @@ begin
     curState := BoardToString();
     curStateKey := ConsiderStateKey(curState, pMark);
 
-    for i := 0 to curStateKey.Count - 1 do
-    begin
-      Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat));
-    end;
+    //for i := 0 to curStateKey.Count - 1 do
+    //begin
+    //  Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat));
+    //end;
 
     if pMark = 'X' then
       chMov := KeyMaxs(curStateKey)
@@ -244,10 +245,10 @@ begin
     curState := BoardToString();
     curStateKey := ConsiderStateKey(curState, pMark);
 
-    for i := 0 to curStateKey.Count - 1 do
-    begin
-      Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat));
-    end;
+    //for i := 0 to curStateKey.Count - 1 do
+    //begin
+    //  Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat));
+    //end;
 
     if pMark = 'X' then
       chMov := KeyMaxs(curStateKey)
@@ -273,13 +274,13 @@ begin
   b := IntButton(f);
   if b.Caption <> '' then
   begin
-    Form1.logBox.Items.Add('Gewähltes Feld ' + NumToCoord(f) +
+    log('Gewähltes Feld ' + NumToCoord(f) +
       ' ist belegt, suche anderes');
     Result := GetRandomMove();
   end
   else
   begin
-    Form1.logBox.Items.Add('Wähle Feld ' + NumToCoord(f));
+    log('Wähle Feld ' + NumToCoord(f));
     Result := f;
   end;
 end;
@@ -297,31 +298,21 @@ begin
   m := Form1.GetPossibleMoves(Form1.BoardToString());
   for i := 0 to Length(m) - 1 do
   begin
-    Form1.logBox.Items.Add('Ist frei: ' + IntToStr(m[i]));
+    log('Ist frei: ' + IntToStr(m[i]));
   end;
   f := Random(9);
   b := IntButton(f);
   if b.Caption <> '' then
   begin
-    Form1.logBox.Items.Add('Gewähltes Feld ' + NumToCoord(f) +
+    log('Gewähltes Feld ' + NumToCoord(f) +
       ' ist belegt, suche anderes');
     RandomMove();
   end
   else
   begin
-    Form1.logBox.Items.Add('Wähle Feld ' + NumToCoord(f));
+    log('Wähle Feld ' + NumToCoord(f));
     b.Caption := 'O';
   end;
-end;
-
-{
- (Veraltet)
-}
-procedure DoPcMove();
-begin
-  //RandomMove();
-  ShowMessage('Dis works');
-  Form1.QMove('O');
 end;
 
 {
@@ -406,7 +397,6 @@ begin
   pC := 'X';
   pH := 'O';
   PM := GetQMove(pC);
-  Writeln(PM);
   HandleMov(IntButton(PM), pC);
   //ConsiderStateKey('_________');
   //x := 'X';
@@ -466,19 +456,19 @@ begin
   begin
     if (GS = 1) and (pC = 'X') then
     begin
-      logBox.Items.Add('PC gewinnt');
+      log('PC gewinnt');
       ShowMessage('PC (X) gewinnt!');
     end else if (GS = 1) and (pC = 'O') then begin
-      logBox.Items.Add('Mensch gewinnt!');
+      log('Mensch gewinnt!');
       ShowMessage('Mensch (X) gewinnt!!!!');
     end else if (GS = 2) and (pC = 'X') then begin
-      logBox.Items.Add('Mensch gewinnt!');
+      log('Mensch gewinnt!');
       ShowMessage('Mensch (X) gewinnt!!!!');
     end else if (GS = 2) and (pC = 'O') then begin
-      logBox.Items.Add('PC gewinnt');
+      log('PC gewinnt');
       ShowMessage('PC (X) gewinnt!');
     end else if (GS = 3) then begin
-      logBox.Items.Add('Unentschieden');
+      log('Unentschieden');
       ShowMessage('Unentschieden!');
     end;
 
@@ -490,23 +480,25 @@ end;
 }
 procedure TForm1.Button1Click(Sender: TObject);
 var
-  BS: string;
+  BS, GSt: string;
   PM: integer;
 begin
-  if GRUN then //Wenn Spiel noch läuft (TODO: durch GS ersetzen)
+  GSt := GameStatus();
+  if (GSt = 0) OR (GSt = 4) then //Wenn Spiel läuft
   begin
     HandleMov(TButton(Sender), pH);
     if GameStatus() = 0 then
     begin
       PM := GetQMove(pC);
-      Writeln('K', PM);
       HandleMov(IntButton(PM), pC);
     end;
   end;
-  //BS:=BoardToString();
-  //ShowMessage(CheckResult(BS));
-  //if NOT hasGameEnded(BS) then RandomMove();
-  //ShowMessage(IntToStr(FindButton(Sender)));
+end;
+
+procedure TForm1.log(msg: String);
+begin
+  logBox.Items.Add(msg);
+  logBox.ScrollBy(0, 999);
 end;
 
 procedure TForm1.resetGame();
@@ -521,11 +513,10 @@ begin
   if pC = 'X' then
   begin
     PM := GetQMove(pC);
-    Writeln(PM);
     HandleMov(IntButton(PM), pC);
   end;
-  logBox.Items.Add('---------------------');
-  logBox.Items.Add('Neues Spiel gestartet');
+  log('---------------------');
+  log('Neues Spiel gestartet');
 end;
 
 procedure TForm1.cmdResetClick(Sender: TObject);
@@ -564,7 +555,6 @@ begin
   GAMMA := 0.9;
   pH := 'X';
   pC := 'O';
-  //Q := TJSONObject.Create;
   Form1.InitQ();
   randomize();
   ro := TRegExpr.Create;
@@ -586,10 +576,8 @@ var
 begin
   e := TJSONObject.Create;
   s := state + pMark;
-  Writeln('S: ', state, pMark);
   if Q.Find(s) = nil then
   begin
-    Writeln('Statekey ', state, pMark, ' existiert nicht');
     dVals := TJSONObject.Create;
     for i := 0 to 8 do
     begin
@@ -654,17 +642,14 @@ begin
   v := sKey.Items[0].AsFloat;
   for i := 1 to sKey.Count - 1 do
   begin
-    Writeln(FloatToStr(sKey.Items[i].AsFloat), ' vs ', FloatToStr(v));
     if sKey.Items[i].AsFloat < v then
     begin
-      Writeln('Smaller');
       v := sKey.Items[i].AsFloat;
       p.Clear;
       p.Add(i);
     end
     else if sKey.Items[i].AsFloat = v then
     begin
-      Writeln('Same');
       p.Add(i);
     end;
   end;
@@ -672,11 +657,7 @@ begin
   if p.Count = 0 then
     p.Add(0);
 
-  Writeln('KMins :: pCount=', p.Count);
-
   rv := Random(p.Count); //Funzt das?
-
-  Writeln('KMins :: rv=', rv);
 
   Result := StrToInt(sKey.Names[p.Integers[rv]]);
 end;
@@ -701,7 +682,6 @@ var
   v: Float;
   p: TJSONArray;
 begin
-  Writeln('KeyMaxs!');
   p := TJSONArray.Create;
   v := sKey.Items[0].AsFloat;
   for i := 1 to sKey.Count - 1 do
@@ -841,7 +821,6 @@ begin
       pC := 'X';
       pH := 'O';
       PM := GetQMove(pC);
-      Writeln(PM);
       HandleMov(IntButton(PM), pC);
     end
     else
