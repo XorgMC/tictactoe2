@@ -5,8 +5,10 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, StrUtils, RegExpr, fpjson, jsonparser, Math;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, LCLType,
+  StdCtrls, ExtCtrls, StrUtils, RegExpr, fpjson, jsonparser, Math,
+  customdrawndrawers, customdrawnextras, customdrawncontrols,
+  customdrawn_win2000, jsonscanner;
 
 type
 
@@ -16,6 +18,9 @@ type
 
   TForm1 = class(TForm)
     Button10: TButton;
+    Button11: TButton;
+    Button12: TButton;
+    Button13: TButton;
     grdB: TLabel;
     grdC: TLabel;
     Button1: TButton;
@@ -35,16 +40,17 @@ type
     grd3: TLabel;
     GroupBox2: TGroupBox;
     logBox: TListBox;
-    ToggleBox1: TToggleBox;
+    OpenDialog1: TOpenDialog;
     procedure Button10Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cmdResetClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure ToggleBox1Change(Sender: TObject);
+    procedure starterChange(Sender: TObject);
   private
     function BoardToString(): string;
     function GetPossibleMoves(curState: string): TArrayBehindert;
-    function ConsiderStateKey(state: string; pMark: String): TJSONObject;
+    function ConsiderStateKey(state: string; pMark: string): TJSONObject;
     procedure LerneQ(pPos: integer; pMark: string);
     function BoardReward(state: string): Float;
     function IsBoardOver(state: string): boolean;
@@ -53,13 +59,17 @@ type
     function KeyMins(sKey: TJSONObject): integer;
     function KeyMaxs(sKey: TJSONObject): integer;
     procedure QMove(pMark: string);
-    function OtherPlayer(pMark: String): String;
+    function OtherPlayer(pMark: string): string;
     procedure RandomMove();
     procedure InitQ();
     function GameStatus(): integer;
-    function GetQMove(pMark: String): Integer;
-    function GetRandomMove(): Integer;
-    procedure HandleMov( cBtn: TButton; pMark: String );
+    function GetQMove(pMark: string): integer;
+    function GetRandomMove(): integer;
+    procedure HandleMov(cBtn: TButton; pMark: string);
+    procedure InitCC();
+    function shallRestartGame(): boolean;
+    procedure resetGame();
+    procedure log(msg: String);
   public
 
   end;
@@ -73,7 +83,8 @@ var
   GRUN: boolean;
   rx, ro: TRegExpr;
   wx, wo, wn: integer;
-  pH, pC: String;
+  pH, pC: string;
+  begState: boolean;
 
 
 
@@ -173,7 +184,7 @@ var
   rv: Float;
   curState: string;
   curStateKey: TJSONObject;
-  chMov,i: integer;
+  chMov, i: integer;
   chBtn: TButton;
 begin
   rv := random(101) / 100;
@@ -188,7 +199,7 @@ begin
 
     for i := 0 to curStateKey.Count - 1 do
     begin
-      Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat ));
+      Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat));
     end;
 
     if pMark = 'X' then
@@ -209,7 +220,6 @@ begin
       chBtn.Caption := pMark;
     end;
 
-
   end;
 
 end;
@@ -222,7 +232,7 @@ var
   rv: Float;
   curState: string;
   curStateKey: TJSONObject;
-  chMov,i: integer;
+  chMov, i: integer;
   chBtn: TButton;
 begin
   rv := random(101) / 100;
@@ -237,7 +247,7 @@ begin
 
     for i := 0 to curStateKey.Count - 1 do
     begin
-      Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat ));
+      Writeln('Pos #', i, ' => ', FloatToStr(curStateKey.Items[i].AsFloat));
     end;
 
     if pMark = 'X' then
@@ -320,36 +330,42 @@ end;
  1 = X gewonnen
  2 = O gewonnen
  3 = Unentschieden
+ 4 = Leeres Feld
  0 = Spiel läuft
 }
-function TForm1.GameStatus(): Integer;
-var BS: String;
-  GS: Integer;
+function TForm1.GameStatus(): integer;
+var
+  BS: string;
+  GS: integer;
 begin
   BS := Form1.BoardToString();
   GS := 0;
+  if BS = '_________' then
+  begin
+    GS := 4;
+  end;
   if rx.Exec(BS) then
+  begin
+    GRUN := False;
+    Inc(wx);
+    GS := 1;
+  end
+  else if ro.Exec(BS) then
+  begin
+    GRUN := False;
+    Inc(wo);
+    GS := 2;
+  end
+  else
+  begin
+    if not AnsiContainsStr(BS, '_') then
     begin
       GRUN := False;
-      Inc(wx);
-      GS := 1;
-    end
-    else if ro.Exec(BS) then
-    begin
-      GRUN := False;
-      Inc(wo);
-      GS := 2;
-    end
-    else
-    begin
-      if not AnsiContainsStr(BS, '_') then
-      begin
-        GRUN := False;
-        Inc(wn);
-        GS := 3;
-      end;
+      Inc(wn);
+      GS := 3;
     end;
-    Result := GS;
+  end;
+  Result := GS;
 end;
 
 {
@@ -384,15 +400,15 @@ end;
 
 procedure TForm1.Button10Click(Sender: TObject);
 var
-  i, j, PM: Integer;
+  i, j, PM: integer;
   c: TJSONObject;
 
 begin
   pC := 'X';
   pH := 'O';
   PM := GetQMove(pC);
-       Writeln(PM);
-       HandleMov( IntButton(PM), pC);
+  Writeln(PM);
+  HandleMov(IntButton(PM), pC);
   //ConsiderStateKey('_________');
   //x := 'X';
   //a := '__O__O__O';
@@ -401,70 +417,21 @@ begin
   //ShowMessage(Q.FormatJSON());
 end;
 
-{
- Event-Handler für "Zug fertig"
- -> Trainiert nach Q-Lernen
- -> Setzt Marke
- -> Zeigt Spielende an
-}
-procedure TForm1.HandleMov(cBtn: TButton; pMark: String);
-var GS: integer;
-begin
-  LerneQ(FindButton(cBtn), pMark);
-  cBtn.Caption := pMark;
-  GS := GameStatus();
-  if GS <> 0 then
-     ShowMessage('Spielende');
-end;
-
-{
- Event-Handler "Feld angeklickt"
-}
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.Button12Click(Sender: TObject);
 var
-  BS: string;
-  PM: Integer;
+  jf: TextFile;
+  js, t, FileName: string;
 begin
-  if GRUN then //Wenn Spiel noch läuft (TODO: durch GS ersetzen)
+ if OpenDialog1.Execute then
   begin
-    HandleMov(TButton(Sender), pH);
-    if GameStatus() = 0 then
-    begin
-       PM := GetQMove(pC);
-       Writeln('K', PM);
-       HandleMov( IntButton(PM), pC);
-    end;
-  end;
-  //BS:=BoardToString();
-  //ShowMessage(CheckResult(BS));
-  //if NOT hasGameEnded(BS) then RandomMove();
-  //ShowMessage(IntToStr(FindButton(Sender)));
-end;
-
-procedure TForm1.cmdResetClick(Sender: TObject);
-var
-  i: integer;
-begin
-  for i := 1 to 9 do
-  begin
-    TButton(Form1.FindComponent('Button' + i.ToString)).Caption := '';
-  end;
-  GRUN := True;
-  logBox.Items.Add('---------------------');
-  logBox.Items.Add('Neues Spiel gestartet');
-end;
-
-procedure TForm1.InitQ();
-var jf: TextFile;
-  js,t: String;
-begin
-  AssignFile(jf, 'game.json');
+    FileName := OpenDialog1.Filename;
+   AssignFile(jf, FileName);
 
   try
     Reset(jf);
     while not EOF(jf) do
     begin
-      readln(jf,t);
+      readln(jf, t);
       js := js + t;
     end;
 
@@ -473,7 +440,128 @@ begin
     Q := TJSONObject(GetJSON(js));
   except
     on E: EInOutError do
-       ShowMessage('I/O Fehler!');
+      ShowMessage('I/O Fehler!');
+    on F: EJSONParser do
+      ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+    on G: EScannerError do
+            ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+  end;
+ end;
+
+end;
+
+{
+ Event-Handler für "Zug fertig"
+ -> Trainiert nach Q-Lernen
+ -> Setzt Marke
+ -> Zeigt Spielende an
+}
+procedure TForm1.HandleMov(cBtn: TButton; pMark: string);
+var
+  GS: integer;
+begin
+  LerneQ(FindButton(cBtn), pMark);
+  cBtn.Caption := pMark;
+  GS := GameStatus();
+  if GS <> 0 then
+  begin
+    if (GS = 1) and (pC = 'X') then
+    begin
+      logBox.Items.Add('PC gewinnt');
+      ShowMessage('PC (X) gewinnt!');
+    end else if (GS = 1) and (pC = 'O') then begin
+      logBox.Items.Add('Mensch gewinnt!');
+      ShowMessage('Mensch (X) gewinnt!!!!');
+    end else if (GS = 2) and (pC = 'X') then begin
+      logBox.Items.Add('Mensch gewinnt!');
+      ShowMessage('Mensch (X) gewinnt!!!!');
+    end else if (GS = 2) and (pC = 'O') then begin
+      logBox.Items.Add('PC gewinnt');
+      ShowMessage('PC (X) gewinnt!');
+    end else if (GS = 3) then begin
+      logBox.Items.Add('Unentschieden');
+      ShowMessage('Unentschieden!');
+    end;
+
+  end;
+end;
+
+{
+ Event-Handler "Feld angeklickt"
+}
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  BS: string;
+  PM: integer;
+begin
+  if GRUN then //Wenn Spiel noch läuft (TODO: durch GS ersetzen)
+  begin
+    HandleMov(TButton(Sender), pH);
+    if GameStatus() = 0 then
+    begin
+      PM := GetQMove(pC);
+      Writeln('K', PM);
+      HandleMov(IntButton(PM), pC);
+    end;
+  end;
+  //BS:=BoardToString();
+  //ShowMessage(CheckResult(BS));
+  //if NOT hasGameEnded(BS) then RandomMove();
+  //ShowMessage(IntToStr(FindButton(Sender)));
+end;
+
+procedure TForm1.log(msg: String);
+begin
+  logBox.Items.Add(msg);
+  logBox.ScrollBy(0, 999);
+end;
+
+procedure TForm1.resetGame();
+var
+  i,PM: integer;
+begin
+  for i := 1 to 9 do
+  begin
+    TButton(Form1.FindComponent('Button' + i.ToString)).Caption := '';
+  end;
+  GRUN := True;
+  if pC = 'X' then
+  begin
+    PM := GetQMove(pC);
+    Writeln(PM);
+    HandleMov(IntButton(PM), pC);
+  end;
+  logBox.Items.Add('---------------------');
+  logBox.Items.Add('Neues Spiel gestartet');
+  logBox.sc
+end;
+
+procedure TForm1.cmdResetClick(Sender: TObject);
+begin
+  resetGame();
+end;
+
+procedure TForm1.InitQ();
+var
+  jf: TextFile;
+  js, t: string;
+begin
+  AssignFile(jf, 'game.json');
+
+  try
+    Reset(jf);
+    while not EOF(jf) do
+    begin
+      readln(jf, t);
+      js := js + t;
+    end;
+
+    CloseFile(jf);
+
+    Q := TJSONObject(GetJSON(js));
+  except
+    on E: EInOutError do
+      ShowMessage('I/O Fehler!');
   end;
 
 end;
@@ -498,11 +586,11 @@ begin
   wo := 0;
 end;
 
-function TForm1.ConsiderStateKey(state: string; pMark: String): TJSONObject;
+function TForm1.ConsiderStateKey(state: string; pMark: string): TJSONObject;
 var
-  dVals,e: TJSONObject;
+  dVals, e: TJSONObject;
   i: integer;
-  s: String;
+  s: string;
 begin
   e := TJSONObject.Create;
   s := state + pMark;
@@ -584,13 +672,13 @@ begin
     end
     else if sKey.Items[i].AsFloat = v then
     begin
-        Writeln('Same');
+      Writeln('Same');
       p.Add(i);
     end;
   end;
 
   if p.Count = 0 then
-     p.Add(0);
+    p.Add(0);
 
   Writeln('KMins :: pCount=', p.Count);
 
@@ -645,12 +733,12 @@ begin
   Result := StrToInt(sKey.Names[p.Integers[rv]]);
 end;
 
-function TForm1.OtherPlayer(pMark: String): String;
+function TForm1.OtherPlayer(pMark: string): string;
 begin
   if LowerCase(pMark) = 'x' then
-     Result := 'O'
+    Result := 'O'
   else
-      Result := 'X';
+    Result := 'X';
 end;
 
 procedure TForm1.LerneQ(pPos: integer; pMark: string);
@@ -658,7 +746,7 @@ var
   curState, nxtState: string;
   curStateKey, nxtStateKey: TJSONObject;
   reward, expected, change: Float;
-  i: Integer;
+  i: integer;
 begin
   curState := BoardToString();
   curStateKey := ConsiderStateKey(curState, pMark);
@@ -675,10 +763,10 @@ begin
     else if pMark = 'O' then
       expected := reward + (GAMMA * KeyMax(nxtStateKey));
   end;
-//  ShowMessage(curStateKey.Floats[pPos.ToString].ToString);
+  //  ShowMessage(curStateKey.Floats[pPos.ToString].ToString);
   change := ALPHA * (expected - curStateKey.Floats[pPos.ToString]);
   curStateKey.Floats[pPos.ToString] := curStateKey.Floats[pPos.ToString] + change;
-//  ShowMessage('Kappa');
+  //  ShowMessage('Kappa');
 end;
 
 function TForm1.GetPossibleMoves(curState: string): TArrayBehindert;
@@ -708,17 +796,71 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   InitGame();
+  InitCC();
 end;
 
-procedure TForm1.ToggleBox1Change(Sender: TObject);
+procedure TForm1.InitCC();
+var
+  BegBtn: TCDButton;
 begin
-  if ToggleBox1.Checked then
+  begState := True;
+  BegBtn := TCDButton.Create(Form1);
+  BegBtn.Parent := GroupBox2;
+  BegBtn.DrawStyle := dsWin2000;
+  BegBtn.Left := 8;
+  BegBtn.Top := 40;
+  BegBtn.Width := 200;
+  BegBtn.Height := 32;
+  BegBtn.Caption := 'Mensch beginnt';
+  BegBtn.Color := clAqua;
+  BegBtn.OnClick := @starterChange;
+end;
+
+function TForm1.shallRestartGame(): boolean;
+var
+  Reply, BoxStyle, GSt: integer;
+begin
+  GSt := GameStatus();
+  if GSt <> 0 then
   begin
-     Color:=clLime;
+    Result := True;
   end
   else
   begin
-    Color := clRed;
+    BoxStyle := MB_ICONQUESTION + MB_YESNO;
+    Reply := Application.MessageBox(
+      'Dafür müssen Sie ein neues Spiel starten - Möchten Sie dies tun?',
+      'QTicTacToe', BoxStyle);
+    Result := (Reply = idYes);
+  end;
+end;
+
+procedure TForm1.starterChange(Sender: TObject);
+var PM:integer;
+begin
+  if shallRestartGame() then
+  begin
+    if begState then
+    begin
+      begState := False;
+      resetGame();
+      TCDButton(Sender).Color := clRed;
+      TCDButton(Sender).Caption := 'PC beginnt';
+      pC := 'X';
+      pH := 'O';
+      PM := GetQMove(pC);
+      Writeln(PM);
+      HandleMov(IntButton(PM), pC);
+    end
+    else
+    begin
+      begState := True;
+      resetGame();
+      TCDButton(Sender).Color := clAqua;
+      TCDButton(Sender).Caption := 'Mensch beginnt';
+      pC := 'O';
+      pH := 'X';
+    end;
   end;
 end;
 

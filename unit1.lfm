@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 477
-  Height = 603
-  Top = 77
+  Left = 96
+  Height = 623
+  Top = 46
   Width = 809
   Caption = 'Form1'
-  ClientHeight = 603
+  ClientHeight = 623
   ClientWidth = 809
   OnCreate = FormCreate
   LCLVersion = '1.8.2.0'
@@ -161,9 +161,9 @@ object Form1: TForm1
     TopIndex = -1
   end
   object Button10: TButton
-    Left = 73
+    Left = 224
     Height = 25
-    Top = 185
+    Top = 200
     Width = 75
     Caption = 'Button10'
     OnClick = Button10Click
@@ -171,30 +171,51 @@ object Form1: TForm1
   end
   object GroupBox2: TGroupBox
     Left = 0
-    Height = 105
+    Height = 225
     Top = 0
-    Width = 185
-    Caption = 'GroupBox2'
-    ClientHeight = 87
-    ClientWidth = 183
+    Width = 217
+    Caption = 'Optionen'
+    ClientHeight = 207
+    ClientWidth = 215
     TabOrder = 3
     object cmdReset: TButton
       Left = 8
       Height = 32
       Top = 0
-      Width = 161
+      Width = 200
       Caption = 'Reset'
       OnClick = cmdResetClick
       TabOrder = 0
     end
-    object ToggleBox1: TToggleBox
+    object Button11: TButton
       Left = 8
       Height = 32
       Top = 40
-      Width = 161
-      Caption = 'Mensch beginnt'
-      OnChange = ToggleBox1Change
+      Width = 200
+      Caption = '-placeholder-'
       TabOrder = 1
     end
+    object Button12: TButton
+      Left = 8
+      Height = 32
+      Top = 80
+      Width = 200
+      Caption = 'Lerndatei auswählen'
+      OnClick = Button12Click
+      TabOrder = 2
+    end
+    object Button13: TButton
+      Left = 8
+      Height = 32
+      Top = 120
+      Width = 200
+      Caption = 'Neue Lerndatei'
+      TabOrder = 3
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'JSON-Datei|*.json|Alle Dateien|*.*'
+    left = 256
+    top = 152
   end
 end
