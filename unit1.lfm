@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 156
+  Left = 477
   Height = 603
-  Top = 92
+  Top = 77
   Width = 809
   Caption = 'Form1'
   ClientHeight = 603
@@ -150,15 +150,6 @@ object Form1: TForm1
       ParentColor = False
     end
   end
-  object cmdReset: TButton
-    Left = 87
-    Height = 38
-    Top = 102
-    Width = 113
-    Caption = 'Reset'
-    OnClick = cmdResetClick
-    TabOrder = 1
-  end
   object logBox: TListBox
     Left = 8
     Height = 328
@@ -166,7 +157,7 @@ object Form1: TForm1
     Width = 208
     ItemHeight = 0
     ScrollWidth = 206
-    TabOrder = 2
+    TabOrder = 1
     TopIndex = -1
   end
   object Button10: TButton
@@ -176,6 +167,34 @@ object Form1: TForm1
     Width = 75
     Caption = 'Button10'
     OnClick = Button10Click
+    TabOrder = 2
+  end
+  object GroupBox2: TGroupBox
+    Left = 0
+    Height = 105
+    Top = 0
+    Width = 185
+    Caption = 'GroupBox2'
+    ClientHeight = 87
+    ClientWidth = 183
     TabOrder = 3
+    object cmdReset: TButton
+      Left = 8
+      Height = 32
+      Top = 0
+      Width = 161
+      Caption = 'Reset'
+      OnClick = cmdResetClick
+      TabOrder = 0
+    end
+    object ToggleBox1: TToggleBox
+      Left = 8
+      Height = 32
+      Top = 40
+      Width = 161
+      Caption = 'Mensch beginnt'
+      OnChange = ToggleBox1Change
+      TabOrder = 1
+    end
   end
 end

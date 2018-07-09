@@ -33,11 +33,14 @@ type
     grd1: TLabel;
     grd2: TLabel;
     grd3: TLabel;
+    GroupBox2: TGroupBox;
     logBox: TListBox;
+    ToggleBox1: TToggleBox;
     procedure Button10Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cmdResetClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ToggleBox1Change(Sender: TObject);
   private
     function BoardToString(): string;
     function GetPossibleMoves(curState: string): TArrayBehindert;
@@ -70,6 +73,7 @@ var
   GRUN: boolean;
   rx, ro: TRegExpr;
   wx, wo, wn: integer;
+  pH, pC: String;
 
 
 
@@ -79,28 +83,31 @@ implementation
 
 { TForm1 }
 
+{
+  Gibt den Spielfeldknopf nach Nummer zurück (0=oben links, 1=oben mitte)
+}
 function IntButton(i: integer): TButton;
 begin
   with Form1 do
   begin
     case i of
-      1:
+      0:
         Result := Button1;
-      2:
+      1:
         Result := Button2;
-      3:
+      2:
         Result := Button3;
-      4:
+      3:
         Result := Button4;
-      5:
+      4:
         Result := Button5;
-      6:
+      5:
         Result := Button6;
-      7:
+      6:
         Result := Button7;
-      8:
+      7:
         Result := Button8;
-      9:
+      8:
         Result := Button9;
       else
         Result := nil;
@@ -108,6 +115,9 @@ begin
   end;
 end;
 
+{
+ Gibt das aktuelle Spielfeld als String zurück (X=X;O=O;[leer]=_)
+}
 function TForm1.BoardToString(): string;
 var
   i: integer;
@@ -126,64 +136,38 @@ begin
   Result := s;
 end;
 
-procedure MoveDone2(PC: boolean);
-var
-  BS: string;
-begin
-  BS := Form1.BoardToString();
-  if GRUN then
-  begin
-    if rx.Exec(BS) then
-    begin
-      GRUN := False;
-      Inc(wx);
-      ShowMessage('X hat gewonnen');
-    end
-    else if ro.Exec(BS) then
-    begin
-      GRUN := False;
-      Inc(wo);
-      ShowMessage('O hat gewonnen');
-    end
-    else
-    begin
-      if not AnsiContainsStr(BS, '_') then
-      begin
-        GRUN := False;
-        Inc(wn);
-        ShowMessage('Unentschieden!');
-      end;
-    end;
-
-  end;
-end;
-
+{
+ Wandelt eine Spielfeldnummer in Koordinaten um
+}
 function NumToCoord(i: integer): string;
 begin
   case i of
-    1:
+    0:
       Result := 'A1';
-    2:
+    1:
       Result := 'B1';
-    3:
+    2:
       Result := 'C1';
-    4:
+    3:
       Result := 'A2';
-    5:
+    4:
       Result := 'B2';
-    6:
+    5:
       Result := 'C2';
-    7:
+    6:
       Result := 'A3';
-    8:
+    7:
       Result := 'B3';
-    9:
+    8:
       Result := 'C3';
     else
       Result := 'Unknown';
   end;
 end;
 
+{
+ (Veraltet) Führt einen Zug nach Q-Lernen aus
+}
 procedure TForm1.QMove(pMark: string);
 var
   rv: Float;
@@ -214,7 +198,7 @@ begin
 
     LerneQ(chMov, 'O');
 
-    chBtn := IntButton(chMov + 1);
+    chBtn := IntButton(chMov);
 
     if chBtn.Caption <> '' then
     begin
@@ -230,6 +214,9 @@ begin
 
 end;
 
+{
+ Gibt einen Zug (Feld) nach Q-Lernen zurück
+}
 function TForm1.GetQMove(pMark: string): integer;
 var
   rv: Float;
@@ -258,11 +245,14 @@ begin
     else
       chMov := KeyMins(curStateKey);
 
-    Result := chMov + 1;
+    Result := chMov;
   end;
 
 end;
 
+{
+ Gibt einen zufälligen Zug (Feld) zurück
+}
 function TForm1.GetRandomMove(): integer;
 var
   f: integer;
@@ -270,7 +260,7 @@ var
   m: array of integer;
   i: integer;
 begin
-  f := Random(9) + 1;
+  f := Random(9);
   b := IntButton(f);
   if b.Caption <> '' then
   begin
@@ -281,10 +271,13 @@ begin
   else
   begin
     Form1.logBox.Items.Add('Wähle Feld ' + NumToCoord(f));
-    Result := f - 1;
+    Result := f;
   end;
 end;
 
+{
+ (Veraltet) Führt einen zufälligen Zug aus
+}
 procedure TForm1.RandomMove();
 var
   f: integer;
@@ -297,7 +290,7 @@ begin
   begin
     Form1.logBox.Items.Add('Ist frei: ' + IntToStr(m[i]));
   end;
-  f := Random(9) + 1;
+  f := Random(9);
   b := IntButton(f);
   if b.Caption <> '' then
   begin
@@ -310,9 +303,11 @@ begin
     Form1.logBox.Items.Add('Wähle Feld ' + NumToCoord(f));
     b.Caption := 'O';
   end;
-  MoveDone2(True);
 end;
 
+{
+ (Veraltet)
+}
 procedure DoPcMove();
 begin
   //RandomMove();
@@ -320,6 +315,13 @@ begin
   Form1.QMove('O');
 end;
 
+{
+ Gibt den Spielstatus zurück
+ 1 = X gewonnen
+ 2 = O gewonnen
+ 3 = Unentschieden
+ 0 = Spiel läuft
+}
 function TForm1.GameStatus(): Integer;
 var BS: String;
   GS: Integer;
@@ -350,45 +352,31 @@ begin
     Result := GS;
 end;
 
-procedure MoveDone(PC: boolean);
-var
-  BS: string;
-begin
-
-  if GRUN then  //TODO: Zweifach-Überprüfung entfernen
-  begin
-
-
-    if not GRUN then
-    begin
-      Form1.logBox.Items.Add('Spielende - X: ' + IntToStr(wx) + '; O: ' +
-        IntToStr(wo) + '; UE: ' + IntToStr(wn));
-    end;
-  end;
-end;
-
+{
+ Gibt die Nummer eines Feldes nach TButton zurück
+}
 function FindButton(O: TObject): integer;
 begin
   with Form1 do
   begin
     if O.Equals(Button1) then
-      Result := 1
+      Result := 0
     else if O.Equals(Button2) then
-      Result := 2
+      Result := 1
     else if O.Equals(Button3) then
-      Result := 3
+      Result := 2
     else if O.Equals(Button4) then
-      Result := 4
+      Result := 3
     else if O.Equals(Button5) then
-      Result := 5
+      Result := 4
     else if O.Equals(Button6) then
-      Result := 6
+      Result := 5
     else if O.Equals(Button7) then
-      Result := 7
+      Result := 6
     else if O.Equals(Button8) then
-      Result := 8
+      Result := 7
     else if O.Equals(Button9) then
-      Result := 9
+      Result := 8
     else
       Result := 0;
   end;
@@ -396,46 +384,56 @@ end;
 
 procedure TForm1.Button10Click(Sender: TObject);
 var
-  i, j: Integer;
+  i, j, PM: Integer;
   c: TJSONObject;
+
 begin
+  pC := 'X';
+  pH := 'O';
+  PM := GetQMove(pC);
+       Writeln(PM);
+       HandleMov( IntButton(PM), pC);
   //ConsiderStateKey('_________');
   //x := 'X';
   //a := '__O__O__O';
   //b := a;
   //b[2] := x.Chars[0];
-  ShowMessage(Q.FormatJSON());
+  //ShowMessage(Q.FormatJSON());
 end;
 
+{
+ Event-Handler für "Zug fertig"
+ -> Trainiert nach Q-Lernen
+ -> Setzt Marke
+ -> Zeigt Spielende an
+}
 procedure TForm1.HandleMov(cBtn: TButton; pMark: String);
 var GS: integer;
 begin
-  LerneQ(FindButton(cBtn) - 1, pMark);
+  LerneQ(FindButton(cBtn), pMark);
   cBtn.Caption := pMark;
   GS := GameStatus();
   if GS <> 0 then
      ShowMessage('Spielende');
 end;
 
+{
+ Event-Handler "Feld angeklickt"
+}
 procedure TForm1.Button1Click(Sender: TObject);
 var
   BS: string;
   PM: Integer;
 begin
-  if GRUN then
+  if GRUN then //Wenn Spiel noch läuft (TODO: durch GS ersetzen)
   begin
-    HandleMov(TButton(Sender), 'X');
+    HandleMov(TButton(Sender), pH);
     if GameStatus() = 0 then
     begin
-       PM := GetQMove('O');
-       Writeln(PM);
-       HandleMov( IntButton(PM), 'O');
+       PM := GetQMove(pC);
+       Writeln('K', PM);
+       HandleMov( IntButton(PM), pC);
     end;
-
-    //LerneQ(FindButton(Sender) - 1, 'X');
-    //logBox.Items.Add('Spieler platziert bei ' + NumToCoord(FindButton(Sender)));
-    //TButton(Sender).Caption := 'X';
-    //oveDone(False);
   end;
   //BS:=BoardToString();
   //ShowMessage(CheckResult(BS));
@@ -484,6 +482,8 @@ procedure InitGame();
 begin
   ALPHA := 0.3;
   GAMMA := 0.9;
+  pH := 'X';
+  pC := 'O';
   //Q := TJSONObject.Create;
   Form1.InitQ();
   randomize();
@@ -594,11 +594,6 @@ begin
 
   Writeln('KMins :: pCount=', p.Count);
 
-  //for i := 0 to p.Count - 1 do
-  //begin
-  //  Writeln('KMinz :: P->', p.Integers[i], '|V->', FloatToStr(sKey.Items[p.Integers[i]].AsFloat), '|K->', );
-  //end;
-
   rv := Random(p.Count); //Funzt das?
 
   Writeln('KMins :: rv=', rv);
@@ -626,6 +621,7 @@ var
   v: Float;
   p: TJSONArray;
 begin
+  Writeln('KeyMaxs!');
   p := TJSONArray.Create;
   v := sKey.Items[0].AsFloat;
   for i := 1 to sKey.Count - 1 do
@@ -642,8 +638,11 @@ begin
     end;
   end;
 
+  if p.Count = 0 then
+    p.Add(0);
+
   rv := Random(p.Count);
-  Result := p.Integers[rv];
+  Result := StrToInt(sKey.Names[p.Integers[rv]]);
 end;
 
 function TForm1.OtherPlayer(pMark: String): String;
@@ -709,6 +708,18 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   InitGame();
+end;
+
+procedure TForm1.ToggleBox1Change(Sender: TObject);
+begin
+  if ToggleBox1.Checked then
+  begin
+     Color:=clLime;
+  end
+  else
+  begin
+    Color := clRed;
+  end;
 end;
 
 end.
