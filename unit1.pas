@@ -19,8 +19,7 @@ type
   TForm1 = class(TForm)
     Button10: TButton;
     Button11: TButton;
-    Button12: TButton;
-    Button13: TButton;
+    ComboBox1: TComboBox;
     grdB: TLabel;
     grdC: TLabel;
     Button1: TButton;
@@ -39,12 +38,15 @@ type
     grd2: TLabel;
     grd3: TLabel;
     GroupBox2: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
     logBox: TListBox;
     OpenDialog1: TOpenDialog;
     procedure Button10Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cmdResetClick(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure starterChange(Sender: TObject);
   private
@@ -83,8 +85,9 @@ var
   GRUN: boolean;
   rx, ro: TRegExpr;
   wx, wo, wn: integer;
-  pH, pC: string;
+  pH, pC, lFl: string;
   begState: boolean;
+
 
 
 
@@ -524,12 +527,14 @@ begin
   resetGame();
 end;
 
-procedure TForm1.InitQ();
-var
-  jf: TextFile;
-  js, t: string;
+procedure TForm1.ComboBox1Change(Sender: TObject);
+var jf: TextFile;
+js, t: string;
 begin
-  AssignFile(jf, 'game.json');
+  if shallRestartGame() then
+  begin
+  lFl := ComboBox1.Items[ComboBox1.ItemIndex];
+  AssignFile(jf, lFl);
 
   try
     Reset(jf);
@@ -545,6 +550,52 @@ begin
   except
     on E: EInOutError do
       ShowMessage('I/O Fehler!');
+    on F: EJSONParser do
+      ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+    on G: EScannerError do
+            ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+  end;
+  resetGame();
+  end
+  else
+  ComboBox1.ItemIndex:= ComboBox1.Items.IndexOf(lFl);
+end;
+
+procedure TForm1.InitQ();
+var
+  jf: TextFile;
+  js, t: string;
+  lFls: TStringList;
+  i: Integer;
+begin
+  lFls := FindAllFiles(GetCurrentDir, '*.json', false);
+  lFls.Sort;
+  For i := 0 To lFls.Count - 1 Do
+  begin
+    ComboBox1.Items.Add(ExtractFileName(lFls[i]));
+  end;
+  ComboBox1.ItemIndex:=0;
+  lFl := ComboBox1.Items[0];
+  AssignFile(jf, lFl);
+
+  try
+    Reset(jf);
+    while not EOF(jf) do
+    begin
+      readln(jf, t);
+      js := js + t;
+    end;
+
+    CloseFile(jf);
+
+    Q := TJSONObject(GetJSON(js));
+  except
+    on E: EInOutError do
+      ShowMessage('I/O Fehler!');
+    on F: EJSONParser do
+      ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+    on G: EScannerError do
+      ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
   end;
 
 end;

@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 96
+  Left = 221
   Height = 623
-  Top = 46
+  Top = 62
   Width = 809
   Caption = 'Form1'
   ClientHeight = 623
@@ -195,22 +195,16 @@ object Form1: TForm1
       Caption = '-placeholder-'
       TabOrder = 1
     end
-    object Button12: TButton
+    object ComboBox1: TComboBox
       Left = 8
       Height = 32
       Top = 80
       Width = 200
-      Caption = 'Lerndatei auswählen'
-      OnClick = Button12Click
+      AutoSize = False
+      ItemHeight = 0
+      OnChange = ComboBox1Change
+      Style = csDropDownList
       TabOrder = 2
-    end
-    object Button13: TButton
-      Left = 8
-      Height = 32
-      Top = 120
-      Width = 200
-      Caption = 'Neue Lerndatei'
-      TabOrder = 3
     end
   end
   object OpenDialog1: TOpenDialog
