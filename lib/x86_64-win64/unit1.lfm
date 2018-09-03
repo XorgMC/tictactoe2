@@ -1,0 +1,300 @@
+object Form1: TForm1
+  Left = 1031
+  Height = 696
+  Top = 363
+  Width = 811
+  Caption = 'Form1'
+  ClientHeight = 696
+  ClientWidth = 811
+  OnCreate = FormCreate
+  LCLVersion = '1.8.4.0'
+  object GroupBox1: TGroupBox
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 243
+    Height = 560
+    Top = 0
+    Width = 568
+    Anchors = [akTop, akRight]
+    Caption = 'Spielbrett'
+    ClientHeight = 540
+    ClientWidth = 564
+    TabOrder = 0
+    object Button1: TButton
+      Left = 72
+      Height = 150
+      Top = 40
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 0
+    end
+    object Button2: TButton
+      Left = 232
+      Height = 150
+      Top = 40
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 1
+    end
+    object Button3: TButton
+      Left = 392
+      Height = 150
+      Top = 40
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 2
+    end
+    object Button4: TButton
+      Left = 72
+      Height = 150
+      Top = 200
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 3
+    end
+    object Button5: TButton
+      Left = 232
+      Height = 150
+      Top = 200
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 4
+    end
+    object Button6: TButton
+      Left = 392
+      Height = 150
+      Top = 200
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 5
+    end
+    object Button7: TButton
+      Left = 72
+      Height = 150
+      Top = 360
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 6
+    end
+    object Button8: TButton
+      Left = 232
+      Height = 150
+      Top = 360
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 7
+    end
+    object Button9: TButton
+      Left = 392
+      Height = 150
+      Top = 360
+      Width = 150
+      OnClick = Button1Click
+      TabOrder = 8
+    end
+    object grdA: TLabel
+      Left = 72
+      Height = 25
+      Top = 6
+      Width = 150
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'A'
+      ParentColor = False
+    end
+    object grdB: TLabel
+      Left = 232
+      Height = 25
+      Top = 6
+      Width = 150
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'B'
+      ParentColor = False
+    end
+    object grdC: TLabel
+      Left = 392
+      Height = 25
+      Top = 6
+      Width = 150
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'C'
+      ParentColor = False
+    end
+    object grd1: TLabel
+      Left = 8
+      Height = 25
+      Top = 96
+      Width = 56
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '1'
+      ParentColor = False
+    end
+    object grd2: TLabel
+      Left = 8
+      Height = 25
+      Top = 264
+      Width = 56
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '2'
+      ParentColor = False
+    end
+    object grd3: TLabel
+      Left = 8
+      Height = 25
+      Top = 424
+      Width = 56
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '3'
+      ParentColor = False
+    end
+  end
+  object logBox: TListBox
+    Left = 8
+    Height = 328
+    Top = 232
+    Width = 208
+    ItemHeight = 0
+    ScrollWidth = 206
+    TabOrder = 1
+  end
+  object Button10: TButton
+    Left = 224
+    Height = 25
+    Top = 200
+    Width = 75
+    Caption = 'Button10'
+    OnClick = Button10Click
+    TabOrder = 2
+  end
+  object GroupBox2: TGroupBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = GroupBox1
+    Left = 8
+    Height = 225
+    Top = 0
+    Width = 219
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 16
+    Caption = 'Optionen'
+    ClientHeight = 205
+    ClientWidth = 215
+    TabOrder = 3
+    object cmdReset: TButton
+      Left = 8
+      Height = 32
+      Top = 0
+      Width = 200
+      Caption = 'Reset'
+      OnClick = cmdResetClick
+      TabOrder = 0
+    end
+    object Button11: TButton
+      Left = 8
+      Height = 32
+      Top = 40
+      Width = 200
+      Caption = '-placeholder-'
+      TabOrder = 1
+    end
+    object ComboBox1: TComboBox
+      Left = 8
+      Height = 23
+      Top = 80
+      Width = 200
+      AutoSize = False
+      ItemHeight = 15
+      OnChange = ComboBox1Change
+      Style = csDropDownList
+      TabOrder = 2
+    end
+    object Label1: TLabel
+      AnchorSideLeft.Control = GroupBox2
+      AnchorSideRight.Control = GroupBox2
+      AnchorSideRight.Side = asrBottom
+      Left = 0
+      Height = 57
+      Top = 120
+      Width = 215
+      Alignment = taCenter
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      Caption = '0 / 0 / 0'
+      Font.Height = -40
+      ParentColor = False
+      ParentFont = False
+      OnClick = Label1Click
+    end
+    object Label2: TLabel
+      Left = 8
+      Height = 17
+      Top = 184
+      Width = 200
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Mensch / Unentsch. / PC'
+      ParentColor = False
+    end
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = logBox
+    AnchorSideRight.Control = logBox
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 24
+    Top = 568
+    Width = 208
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Trainingsfortschritt:'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = logBox
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 63
+    Top = 592
+    Width = 208
+    Align = alCustom
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoSize = False
+    BorderSpacing.Bottom = 12
+    Caption = '5%'
+    Font.Height = -33
+    ParentColor = False
+    ParentFont = False
+    OnClick = Label4Click
+  end
+  object ToggleBox1: TToggleBox
+    Left = 8
+    Height = 25
+    Top = 656
+    Width = 211
+    Caption = 'Training starten'
+    OnChange = ToggleBox1Change
+    TabOrder = 4
+  end
+  object Button13: TButton
+    Left = 241
+    Height = 25
+    Top = 614
+    Width = 75
+    Caption = 'Button13'
+    OnClick = Button13Click
+    TabOrder = 5
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'JSON-Datei|*.json|Alle Dateien|*.*'
+    left = 256
+    top = 152
+  end
+end

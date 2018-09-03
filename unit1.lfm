@@ -1,21 +1,24 @@
 object Form1: TForm1
-  Left = 467
-  Height = 623
-  Top = 24
-  Width = 809
+  Left = 1031
+  Height = 696
+  Top = 363
+  Width = 811
   Caption = 'Form1'
-  ClientHeight = 623
-  ClientWidth = 809
+  ClientHeight = 696
+  ClientWidth = 811
   OnCreate = FormCreate
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object GroupBox1: TGroupBox
-    Left = 232
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 243
     Height = 560
     Top = 0
     Width = 568
+    Anchors = [akTop, akRight]
     Caption = 'Spielbrett'
-    ClientHeight = 542
-    ClientWidth = 566
+    ClientHeight = 540
+    ClientWidth = 564
     TabOrder = 0
     object Button1: TButton
       Left = 72
@@ -158,7 +161,6 @@ object Form1: TForm1
     ItemHeight = 0
     ScrollWidth = 206
     TabOrder = 1
-    TopIndex = -1
   end
   object Button10: TButton
     Left = 224
@@ -170,12 +172,17 @@ object Form1: TForm1
     TabOrder = 2
   end
   object GroupBox2: TGroupBox
-    Left = 0
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = GroupBox1
+    Left = 8
     Height = 225
     Top = 0
-    Width = 217
+    Width = 219
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Right = 16
     Caption = 'Optionen'
-    ClientHeight = 207
+    ClientHeight = 205
     ClientWidth = 215
     TabOrder = 3
     object cmdReset: TButton
@@ -197,26 +204,31 @@ object Form1: TForm1
     end
     object ComboBox1: TComboBox
       Left = 8
-      Height = 32
+      Height = 23
       Top = 80
       Width = 200
       AutoSize = False
-      ItemHeight = 0
+      ItemHeight = 15
       OnChange = ComboBox1Change
       Style = csDropDownList
       TabOrder = 2
     end
     object Label1: TLabel
-      Left = 8
+      AnchorSideLeft.Control = GroupBox2
+      AnchorSideRight.Control = GroupBox2
+      AnchorSideRight.Side = asrBottom
+      Left = 0
       Height = 57
       Top = 120
-      Width = 200
+      Width = 215
       Alignment = taCenter
+      Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       Caption = '0 / 0 / 0'
       Font.Height = -40
       ParentColor = False
       ParentFont = False
+      OnClick = Label1Click
     end
     object Label2: TLabel
       Left = 8
@@ -228,6 +240,57 @@ object Form1: TForm1
       Caption = 'Mensch / Unentsch. / PC'
       ParentColor = False
     end
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = logBox
+    AnchorSideRight.Control = logBox
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 24
+    Top = 568
+    Width = 208
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'Trainingsfortschritt:'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = logBox
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 63
+    Top = 592
+    Width = 208
+    Align = alCustom
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoSize = False
+    BorderSpacing.Bottom = 12
+    Caption = '5%'
+    Font.Height = -33
+    ParentColor = False
+    ParentFont = False
+    OnClick = Label4Click
+  end
+  object ToggleBox1: TToggleBox
+    Left = 8
+    Height = 25
+    Top = 656
+    Width = 211
+    Caption = 'Training starten'
+    OnChange = ToggleBox1Change
+    TabOrder = 4
+  end
+  object Button13: TButton
+    Left = 241
+    Height = 25
+    Top = 614
+    Width = 75
+    Caption = 'Button13'
+    OnClick = Button13Click
+    TabOrder = 5
   end
   object OpenDialog1: TOpenDialog
     Filter = 'JSON-Datei|*.json|Alle Dateien|*.*'

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, LCLType,
   StdCtrls, ExtCtrls, StrUtils, RegExpr, fpjson, jsonparser, Math,
   customdrawndrawers, customdrawnextras, customdrawncontrols,
-  customdrawn_win2000, jsonscanner;
+  customdrawn_win2000, jsonscanner,training;
 
 type
 
@@ -19,6 +19,7 @@ type
   TForm1 = class(TForm)
     Button10: TButton;
     Button11: TButton;
+    Button13: TButton;
     ComboBox1: TComboBox;
     grdB: TLabel;
     grdC: TLabel;
@@ -38,15 +39,24 @@ type
     grd2: TLabel;
     grd3: TLabel;
     GroupBox2: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     logBox: TListBox;
     OpenDialog1: TOpenDialog;
+    ToggleBox1: TToggleBox;
     procedure Button10Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
+    procedure Button13Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cmdResetClick(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure Label1Click(Sender: TObject);
+    procedure Label4Click(Sender: TObject);
     procedure starterChange(Sender: TObject);
+    procedure ToggleBox1Change(Sender: TObject);
   private
     function BoardToString(): string;
     function GetPossibleMoves(curState: string): TArrayBehindert;
@@ -68,10 +78,12 @@ type
     procedure HandleMov(cBtn: TButton; pMark: string);
     procedure InitCC();
     function shallRestartGame(): boolean;
-    procedure resetGame();
+
     procedure log(msg: String);
   public
-
+     procedure resetGame();
+     Var Wins, Equal, Loses:Integer;
+  procedure prozente;
   end;
 
 var
@@ -84,7 +96,7 @@ var
   rx, ro: TRegExpr;
   wx, wo, wn: integer;
   pH, pC, lFl: string;
-  begState: boolean;
+  begState,spielFertig: boolean;
 
 
 
@@ -440,6 +452,17 @@ begin
 
 end;
 
+procedure TForm1.Button13Click(Sender: TObject);
+begin
+  //ShowMessage(Q.FormatJSON());
+ FOrm1.prozente;
+end;
+
+procedure updateLeaderboard;
+begin
+   Form1.Label1.Caption:=Form1.wins.toString + ' / ' + Form1.equal.toString + ' / ' + Form1.loses.ToString;
+end;
+
 {
  Event-Handler für "Zug fertig"
  -> Trainiert nach Q-Lernen
@@ -449,6 +472,7 @@ end;
 procedure TForm1.HandleMov(cBtn: TButton; pMark: string);
 var
   GS: integer;
+
 begin
   LerneQ(FindButton(cBtn), pMark);
   cBtn.Caption := pMark;
@@ -458,22 +482,33 @@ begin
     if (GS = 1) and (pC = 'X') then
     begin
       log('PC gewinnt');
-      ShowMessage('PC (X) gewinnt!');
+    //  ShowMessage('PC (X) gewinnt!');    //Musste Messages entfernen damit er trainiert
+      Inc(loses);
+      spielFertig:=true;
     end else if (GS = 1) and (pC = 'O') then begin
       log('Mensch gewinnt!');
-      ShowMessage('Mensch (X) gewinnt!!!!');
+     // ShowMessage('Mensch (X) gewinnt!!!!');
+      Inc(wins);
+      spielFertig:=true;
     end else if (GS = 2) and (pC = 'X') then begin
       log('Mensch gewinnt!');
-      ShowMessage('Mensch (X) gewinnt!!!!');
+     // ShowMessage('Mensch (X) gewinnt!!!!');
+      Inc(wins);
+      spielFertig:=true;
     end else if (GS = 2) and (pC = 'O') then begin
       log('PC gewinnt');
-      ShowMessage('PC (X) gewinnt!');
+     // ShowMessage('PC (X) gewinnt!');
+      Inc(loses);
+      spielFertig:=true;
     end else if (GS = 3) then begin
       log('Unentschieden');
-      ShowMessage('Unentschieden!');
+      //ShowMessage('Unentschieden!');
+      Inc(equal);
+      spielFertig:=true;
     end;
 
   end;
+  updateLeaderBoard;
 end;
 
 {
@@ -606,6 +641,7 @@ begin
   pC := 'O';
   Form1.InitQ();
   randomize();
+  spielFertig:=False;
   ro := TRegExpr.Create;
   rx := TRegExpr.Create;
   rx.Expression :=
@@ -818,7 +854,22 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   InitGame();
   InitCC();
+  wins:=0;
+  loses:=0;
+  equal:=0;
 end;
+
+procedure TForm1.Label1Click(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.Label4Click(Sender: TObject);
+begin
+
+end;
+
+
 
 procedure TForm1.InitCC();
 var
@@ -882,6 +933,142 @@ begin
       pH := 'X';
     end;
   end;
+end;
+
+procedure training;
+Var randomI:Integer;
+begin
+  randomI:=random(9)+1;
+  //ShowMessage(randomI.ToString());
+  if spielFertig then
+  begin
+       Form1.resetGame();
+       spielFertig:=false;
+  end
+  else
+  begin
+  case randomI of
+  1:begin
+        if Form1.Button1.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button1);
+        end;
+  end;
+  2:begin
+        if Form1.Button2.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button2);
+        end;
+  end;
+  3:begin
+        if Form1.Button3.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button3);
+        end;
+  end;
+  4:begin
+        if Form1.Button4.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button4);
+        end;
+  end;
+  5:begin
+        if Form1.Button5.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button5);
+        end;
+  end;
+  6:begin
+        if Form1.Button6.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button6);
+        end;
+  end;
+  7:begin
+        if Form1.Button7.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button7);
+        end;
+  end;
+  8:begin
+        if Form1.Button8.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button8);
+        end;
+  end;
+  9:begin
+        if Form1.Button9.Caption <> '' then
+        begin
+             training;
+        end
+        else
+        begin
+          Form1.Button1Click(Form1.Button9);
+        end;
+  end;
+
+
+
+
+end;
+
+  end;
+ end;
+procedure TForm1.prozente;
+Var e,l,w,prozent:Integer;
+begin
+    l:=  Form1.Loses;
+  e:=Form1.Equal;
+  w:=Form1.Wins;
+   ShowMessage((w+l+e).toString);
+   if (w+l+e)=0 then prozent:=0
+   else
+   begin
+  prozent:= ((l+e) div (w+l+e))* 100;
+
+   end;
+  Form1.Label4.Caption:=prozent.ToString + '%';
+end;
+
+procedure TForm1.ToggleBox1Change(Sender: TObject);
+Var MyThread:TMyThread;
+begin
+
+   MyThread := TMyThread.Create(True);
+   MyThread.Resume;
+
 end;
 
 end.
