@@ -19,8 +19,10 @@ type
   TForm1 = class(TForm)
     Button10: TButton;
     Button11: TButton;
+    Button12: TButton;
     Button13: TButton;
     ComboBox1: TComboBox;
+    Edit1: TEdit;
     grdB: TLabel;
     grdC: TLabel;
     Button1: TButton;
@@ -43,8 +45,13 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    ListBox1: TListBox;
     logBox: TListBox;
     OpenDialog1: TOpenDialog;
+    SaveDialog1: TSaveDialog;
     ToggleBox1: TToggleBox;
     procedure Button10Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
@@ -52,6 +59,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure cmdResetClick(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure Label4Click(Sender: TObject);
@@ -73,7 +81,7 @@ type
     procedure RandomMove();
     procedure InitQ();
     function GameStatus(): integer;
-    function GetQMove(pMark: string): integer;
+
     function GetRandomMove(): integer;
     procedure HandleMov(cBtn: TButton; pMark: string);
     procedure InitCC();
@@ -82,7 +90,10 @@ type
     procedure log(msg: String);
   public
      procedure resetGame();
+
+     function GetQMove(pMark: string): integer;
      Var Wins, Equal, Loses:Integer;
+  spiele:longint;
   procedure prozente;
   end;
 
@@ -424,33 +435,26 @@ var
   jf: TextFile;
   js, t, FileName: string;
 begin
- if OpenDialog1.Execute then
+  SaveDialog1.Filter:='*.json';
+ if SaveDialog1.Execute then
   begin
-    FileName := OpenDialog1.Filename;
+    FileName := SaveDialog1.Filename;
    AssignFile(jf, FileName);
 
-  try
-    Reset(jf);
-    while not EOF(jf) do
-    begin
-      readln(jf, t);
-      js := js + t;
-    end;
+
+    Rewrite(jf);
+
+    write(jf, Q.FormatJSON());
+
+
 
     CloseFile(jf);
 
-    Q := TJSONObject(GetJSON(js));
-  except
-    on E: EInOutError do
-      ShowMessage('I/O Fehler!');
-    on F: EJSONParser do
-      ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
-    on G: EScannerError do
-            ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+
   end;
  end;
 
-end;
+
 
 procedure TForm1.Button13Click(Sender: TObject);
 begin
@@ -505,6 +509,7 @@ begin
       //ShowMessage('Unentschieden!');
       Inc(equal);
       spielFertig:=true;
+     // ShowMessage('Boom');
     end;
 
   end;
@@ -592,6 +597,14 @@ begin
   end
   else
   ComboBox1.ItemIndex:= ComboBox1.Items.IndexOf(lFl);
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+Var idk:String;
+begin
+  idk:=Edit1.Text;
+  if idk <> '' then
+  Epsilon:=idk.ToDouble()/100;
 end;
 
 procedure TForm1.InitQ();
@@ -854,6 +867,9 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   InitGame();
   InitCC();
+  spiele:=0;
+  Epsilon:=0.2;
+  Edit1.Text:='20';
   wins:=0;
   loses:=0;
   equal:=0;
@@ -934,12 +950,12 @@ begin
     end;
   end;
 end;
-
-procedure training;
+{
+procedure TForm1.training;
 Var randomI:Integer;
 begin
-  randomI:=random(9)+1;
-  //ShowMessage(randomI.ToString());
+  randomI:=GetQmove('X');
+  ShowMessage(randomI.ToString());
   if spielFertig then
   begin
        Form1.resetGame();
@@ -1045,7 +1061,7 @@ begin
 end;
 
   end;
- end;
+ end; }
 procedure TForm1.prozente;
 Var e,l,w,prozent:Integer;
 begin

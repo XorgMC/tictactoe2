@@ -16,6 +16,7 @@ Type
      procedure Execute; override;
    public
      Constructor Create(CreateSuspended : boolean);
+
    end;
  implementation
         uses Unit1;
@@ -35,16 +36,19 @@ Type
  procedure training;
 Var randomI:Integer;
   prozent:double;
+
 begin
-  randomI:=random(9)+1;
-  //ShowMessage(randomI.ToString());
+
+
   if spielFertig then
   begin
        Form1.resetGame();
+       Inc(Form1.spiele);
        spielFertig:=false;
   end
   else
   begin
+   randomI:=Form1.GetQmove('O')+1;
   case randomI of
   1:begin
         if Form1.Button1.Caption <> '' then
@@ -146,6 +150,7 @@ end;
   // ShowMessage((w+l+e).toString);
   if ((Form1.Wins+Form1.Loses+Form1.Equal) >= 10000) then
   begin
+       Form1.ListBox1.items.add(Form1.Label4.caption + ' - Trainer: ' + Form1.Wins.toString + ' - Unentschieden: ' + Form1.Equal.toString + ' - KI: ' + Form1.Loses.toString);
        Form1.Wins:=0;
        Form1.Equal:=0;
        Form1.Loses:=0;
@@ -157,6 +162,7 @@ end;
 
    end;
   Form1.Label4.Caption:=RoundTo(prozent,-2).toString + '%';
+  Form1.Label5.Caption:=Form1.spiele.ToString + ' Simulierte Spiele';
   end;
  end;
  procedure TMyThread.Execute;
@@ -169,6 +175,8 @@ end;
    while (not Terminated) and (Form1.ToggleBox1.Checked) do
      begin
         training;
+        //sleep(1000);
+
        if NewStatus <> fStatusText then
          begin
            fStatusText := newStatus;
