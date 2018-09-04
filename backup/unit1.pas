@@ -21,6 +21,7 @@ type
     Button11: TButton;
     Button12: TButton;
     Button13: TButton;
+    CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     Edit1: TEdit;
     grdB: TLabel;
@@ -57,6 +58,7 @@ type
     procedure Button12Click(Sender: TObject);
     procedure Button13Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure CheckBox1Change(Sender: TObject);
     procedure cmdResetClick(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
@@ -536,6 +538,11 @@ begin
   end;
 end;
 
+procedure TForm1.CheckBox1Change(Sender: TObject);
+begin
+
+end;
+
 procedure TForm1.log(msg: String);
 begin
   logBox.Items.Add(msg);
@@ -602,8 +609,9 @@ end;
 procedure TForm1.Edit1Change(Sender: TObject);
 Var idk:String;
 begin
+  ShowMessage('Fucking Changed');
   idk:=Edit1.Text;
-
+  if idk <> '' then
   Epsilon:=idk.ToDouble()/100;
 end;
 

@@ -35,6 +35,7 @@ Type
  end;
  procedure training;
 Var randomI:Integer;
+  SomeStr:String;
   prozent:double;
 
 begin
@@ -48,7 +49,7 @@ begin
   end
   else
   begin
-   randomI:=Form1.GetQmove('O')+1;
+   randomI:=Form1.GetQmove('X')+1;
   case randomI of
   1:begin
         if Form1.Button1.Caption <> '' then
@@ -149,8 +150,19 @@ end;
 
   // ShowMessage((w+l+e).toString);
   if ((Form1.Wins+Form1.Loses+Form1.Equal) >= 10000) then
+
   begin
-       Form1.ListBox1.items.add(Form1.Label4.caption + ' - ' + Form1.Wins.toString + ' - ' + Form1.Equal.toString + ' - ' + Form1.Loses.toString);
+       if Form1.CheckBox1.Checked then
+       begin
+
+            SetLength(SomeStr,Length(Form1.Label4.Caption));
+            SomeStr:=Form1.Label4.Caption;
+            SetLength(SomeStr,Length(SomeStr)-1);
+            Form1.Edit1.Text:=RoundTo(100-RoundTo(SomeStr.ToDouble(),-2),-2).toString;
+            //Epsilon:= RoundTo(100-RoundTo(prozent,-2),-2).toString;
+       end;
+
+       Form1.ListBox1.items.add(Form1.Label4.caption + ' - Trainer: ' + Form1.Wins.toString + ' - Unentschieden: ' + Form1.Equal.toString + ' - KI: ' + Form1.Loses.toString);
        Form1.Wins:=0;
        Form1.Equal:=0;
        Form1.Loses:=0;
