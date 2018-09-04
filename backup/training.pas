@@ -49,7 +49,7 @@ begin
   end
   else
   begin
-   randomI:=Form1.GetQmove('X')+1;
+   randomI:=Form1.GetQmove('O')+1;
   case randomI of
   1:begin
         if Form1.Button1.Caption <> '' then
@@ -158,7 +158,7 @@ end;
             SetLength(SomeStr,Length(Form1.Label4.Caption));
             SomeStr:=Form1.Label4.Caption;
             SetLength(SomeStr,Length(SomeStr)-1);
-            Form1.Edit1.Text:=RoundTo(100-RoundTo(SomeStr.ToDouble(),-2),-2).toString;
+            Form1.Edit1.Text:=RoundTo(100-RoundTo(SomeStr.ToDouble()*2,-2),-2).toString;
             //Epsilon:= RoundTo(100-RoundTo(prozent,-2),-2).toString;
        end;
 
