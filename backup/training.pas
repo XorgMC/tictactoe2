@@ -49,7 +49,7 @@ begin
   end
   else
   begin
-   randomI:=Form1.GetQmove('O')+1;
+   randomI:=Form1.GetQmove('X')+1;
   case randomI of
   1:begin
         if Form1.Button1.Caption <> '' then

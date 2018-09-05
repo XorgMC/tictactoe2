@@ -609,7 +609,7 @@ end;
 procedure TForm1.Edit1Change(Sender: TObject);
 Var idk:String;
 begin
-  ShowMessage('Fucking Changed');
+  //ShowMessage('Fucking Changed');
   idk:=Edit1.Text;
   if idk <> '' then
   Epsilon:=idk.ToDouble()/100;
