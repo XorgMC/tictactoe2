@@ -169,7 +169,7 @@ begin
         SomeStr := Form1.Label4.Caption;
         SetLength(SomeStr, Length(SomeStr) - 1);
         Form1.Edit1.Text :=
-          (RoundTo(100 - RoundTo(SomeStr.ToDouble(), -2), -2) / 2).toString;
+          (RoundTo(100 - RoundTo(SomeStr.ToDouble(), -2), -2)).toString;
         //Epsilon:= RoundTo(100-RoundTo(prozent,-2),-2).toString;
       end;
 

@@ -642,7 +642,7 @@ end;
 
 procedure TForm1.Edit2Change(Sender: TObject);
 begin
-  if (Edit2.Text <> 'O') or (Edit2.Text <> 'X') then
+  if ((Edit2.Text <> 'O') or (Edit2.Text <> 'X')) and (Edit2.Text <> '') then
   begin
        ShowMessage('Entweder "X" oder "O"');
        Edit2.Text:='O';
@@ -662,7 +662,8 @@ procedure TForm1.Edit4Change(Sender: TObject);
 begin
   if Edit4.text <> '' then
   begin
-       BEqual:=RoundTo(Edit4.Text.ToDouble /100,-2);
+    temp:=Edit4.Text;
+       BEqual:=RoundTo(temp.ToDouble /100,-2);
   end;
 end;
 
@@ -670,7 +671,8 @@ procedure TForm1.Edit5Change(Sender: TObject);
 begin
   if Edit5.text <> '' then
   begin
-       BLose:=RoundTo(Edit5.Text.ToDouble()/100,-2);
+    temp:=Edit5.Text;
+       BLose:=RoundTo(temp.ToDouble/100,-2);
   end;
 end;
 

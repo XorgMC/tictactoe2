@@ -642,7 +642,7 @@ end;
 
 procedure TForm1.Edit2Change(Sender: TObject);
 begin
-  if (Edit2.Text <> 'O') or (Edit2.Text <> 'X') then
+  if ((Edit2.Text <> 'O') and (Edit2.Text <> 'X')) and (Edit2.Text <> '') then
   begin
        ShowMessage('Entweder "X" oder "O"');
        Edit2.Text:='O';

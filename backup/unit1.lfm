@@ -366,7 +366,6 @@ object Form1: TForm1
     Height = 23
     Top = 348
     Width = 120
-    NumbersOnly = True
     OnChange = Edit2Change
     TabOrder = 10
     Text = 'O'
