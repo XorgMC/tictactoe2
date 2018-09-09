@@ -108,7 +108,7 @@ type
   public
     procedure resetGame();
 
-    function GetQMove(pMark: string): integer;
+    function GetQMove(pMark: string;isTrainer:Boolean): integer;
   var
     Wins, Equal, Loses: integer;
     spiele: longint;
@@ -270,7 +270,7 @@ end;
 {
  Gibt einen Zug (Feld) nach Q-Lernen zurück
 }
-function TForm1.GetQMove(pMark: string): integer;
+function TForm1.GetQMove(pMark: string;isTrainer:Boolean): integer;
 var
   rv: Float;
   curState: string;
@@ -278,13 +278,16 @@ var
   chMov, i: integer;
   chBtn: TButton;
 begin
+  if not isTrainer then
+  begin
   rv := random(101) / 100;
   if rv < EPSILON then
   begin
     Result := GetRandomMove();
+
+  end;
   end
-  else
-  begin
+
     curState := BoardToString();
     curStateKey := ConsiderStateKey(curState, pMark);
 
@@ -299,7 +302,7 @@ begin
       chMov := KeyMins(curStateKey);
 
     Result := chMov;
-  end;
+
 
 end;
 
@@ -437,7 +440,7 @@ var
 begin
   pC := 'X';
   pH := 'O';
-  PM := GetQMove(pC);
+  PM := GetQMove(pC,false);
   HandleMov(IntButton(PM), pC);
   //ConsiderStateKey('_________');
   //x := 'X';
@@ -555,7 +558,7 @@ begin
     HandleMov(TButton(Sender), pH);
     if GameStatus() = 0 then
     begin
-      PM := GetQMove(pC);
+      PM := GetQMove(pC,false);
       HandleMov(IntButton(PM), pC);
     end;
   end;
@@ -583,7 +586,7 @@ begin
   GRUN := True;
   if pC = 'X' then
   begin
-    PM := GetQMove(pC);
+    PM := GetQMove(pC,false);
     HandleMov(IntButton(PM), pC);
   end;
   log('---------------------');
@@ -642,7 +645,7 @@ end;
 
 procedure TForm1.Edit2Change(Sender: TObject);
 begin
-  if ((Edit2.Text <> 'O') or (Edit2.Text <> 'X')) and (Edit2.Text <> '') then
+  if ((Edit2.Text <> 'O') and (Edit2.Text <> 'X')) and (Edit2.Text <> '') then
   begin
        ShowMessage('Entweder "X" oder "O"');
        Edit2.Text:='O';
@@ -1006,7 +1009,7 @@ begin
       TCDButton(Sender).Caption := 'PC beginnt';
       pC := 'X';
       pH := 'O';
-      PM := GetQMove(pC);
+      PM := GetQMove(pC,false);
       HandleMov(IntButton(PM), pC);
     end
     else
