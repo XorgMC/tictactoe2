@@ -53,7 +53,7 @@ begin
   end
   else
   begin
-    randomI := Form1.GetQmove('X') + 1;
+    randomI := Form1.GetQmove(Form1.Edit2.Text) + 1;
     case randomI of
       1:
       begin

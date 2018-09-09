@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, LCLType,
   StdCtrls, ExtCtrls, StrUtils, RegExpr, fpjson, jsonparser, Math,
   customdrawndrawers, customdrawnextras, customdrawncontrols,
-  customdrawn_win2000, jsonscanner,training;
+  customdrawn_win2000, jsonscanner, training;
 
 type
 
@@ -24,6 +24,10 @@ type
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
     grdB: TLabel;
     grdC: TLabel;
     Button1: TButton;
@@ -43,12 +47,19 @@ type
     grd3: TLabel;
     GroupBox2: TGroupBox;
     Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     ListBox1: TListBox;
     logBox: TListBox;
     OpenDialog1: TOpenDialog;
@@ -62,6 +73,10 @@ type
     procedure cmdResetClick(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
+    procedure Edit2Change(Sender: TObject);
+    procedure Edit3Change(Sender: TObject);
+    procedure Edit4Change(Sender: TObject);
+    procedure Edit5Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure Label4Click(Sender: TObject);
@@ -89,14 +104,16 @@ type
     procedure InitCC();
     function shallRestartGame(): boolean;
 
-    procedure log(msg: String);
+    procedure log(msg: string);
   public
-     procedure resetGame();
+    procedure resetGame();
 
-     function GetQMove(pMark: string): integer;
-     Var Wins, Equal, Loses:Integer;
-  spiele:longint;
-  procedure prozente;
+    function GetQMove(pMark: string): integer;
+  var
+    Wins, Equal, Loses: integer;
+    spiele: longint;
+
+    procedure prozente;
   end;
 
 var
@@ -108,9 +125,9 @@ var
   GRUN: boolean;
   rx, ro: TRegExpr;
   wx, wo, wn: integer;
-  pH, pC, lFl: string;
-  begState,spielFertig: boolean;
-
+  pH, pC, lFl, temp: string;
+  begState, spielFertig: boolean;
+  BWin,BEqual,BLose:Double;
 
 
 
@@ -300,8 +317,7 @@ begin
   b := IntButton(f);
   if b.Caption <> '' then
   begin
-    log('Gewähltes Feld ' + NumToCoord(f) +
-      ' ist belegt, suche anderes');
+    log('Gewähltes Feld ' + NumToCoord(f) + ' ist belegt, suche anderes');
     Result := GetRandomMove();
   end
   else
@@ -330,8 +346,7 @@ begin
   b := IntButton(f);
   if b.Caption <> '' then
   begin
-    log('Gewähltes Feld ' + NumToCoord(f) +
-      ' ist belegt, suche anderes');
+    log('Gewähltes Feld ' + NumToCoord(f) + ' ist belegt, suche anderes');
     RandomMove();
   end
   else
@@ -437,36 +452,36 @@ var
   jf: TextFile;
   js, t, FileName: string;
 begin
-  SaveDialog1.Filter:='*.json';
- if SaveDialog1.Execute then
+  SaveDialog1.Filter := '*.json';
+  if SaveDialog1.Execute then
   begin
     FileName := SaveDialog1.Filename;
-   AssignFile(jf, FileName);
+    AssignFile(jf, FileName);
 
 
     Rewrite(jf);
 
-    write(jf, Q.FormatJSON());
+    Write(jf, Q.FormatJSON());
 
 
 
     CloseFile(jf);
 
-
   end;
- end;
+end;
 
 
 
 procedure TForm1.Button13Click(Sender: TObject);
 begin
   //ShowMessage(Q.FormatJSON());
- FOrm1.prozente;
+  FOrm1.prozente;
 end;
 
 procedure updateLeaderboard;
 begin
-   Form1.Label1.Caption:=Form1.wins.toString + ' / ' + Form1.equal.toString + ' / ' + Form1.loses.ToString;
+  Form1.Label1.Caption := Form1.wins.toString + ' / ' + Form1.equal.toString +
+    ' / ' + Form1.loses.ToString;
 end;
 
 {
@@ -488,30 +503,38 @@ begin
     if (GS = 1) and (pC = 'X') then
     begin
       log('PC gewinnt');
-    //  ShowMessage('PC (X) gewinnt!');    //Musste Messages entfernen damit er trainiert
+      //  ShowMessage('PC (X) gewinnt!');    //Musste Messages entfernen damit er trainiert
       Inc(loses);
-      spielFertig:=true;
-    end else if (GS = 1) and (pC = 'O') then begin
+      spielFertig := True;
+    end
+    else if (GS = 1) and (pC = 'O') then
+    begin
       log('Mensch gewinnt!');
-     // ShowMessage('Mensch (X) gewinnt!!!!');
+      // ShowMessage('Mensch (X) gewinnt!!!!');
       Inc(wins);
-      spielFertig:=true;
-    end else if (GS = 2) and (pC = 'X') then begin
+      spielFertig := True;
+    end
+    else if (GS = 2) and (pC = 'X') then
+    begin
       log('Mensch gewinnt!');
-     // ShowMessage('Mensch (X) gewinnt!!!!');
+      // ShowMessage('Mensch (X) gewinnt!!!!');
       Inc(wins);
-      spielFertig:=true;
-    end else if (GS = 2) and (pC = 'O') then begin
+      spielFertig := True;
+    end
+    else if (GS = 2) and (pC = 'O') then
+    begin
       log('PC gewinnt');
-     // ShowMessage('PC (X) gewinnt!');
+      // ShowMessage('PC (X) gewinnt!');
       Inc(loses);
-      spielFertig:=true;
-    end else if (GS = 3) then begin
+      spielFertig := True;
+    end
+    else if (GS = 3) then
+    begin
       log('Unentschieden');
       //ShowMessage('Unentschieden!');
       Inc(equal);
-      spielFertig:=true;
-     // ShowMessage('Boom');
+      spielFertig := True;
+      // ShowMessage('Boom');
     end;
 
   end;
@@ -527,7 +550,7 @@ var
   PM, GSt: integer;
 begin
   GSt := GameStatus();
-  if (GSt = 0) OR (GSt = 4) then //Wenn Spiel läuft
+  if (GSt = 0) or (GSt = 4) then //Wenn Spiel läuft
   begin
     HandleMov(TButton(Sender), pH);
     if GameStatus() = 0 then
@@ -543,7 +566,7 @@ begin
 
 end;
 
-procedure TForm1.log(msg: String);
+procedure TForm1.log(msg: string);
 begin
   logBox.Items.Add(msg);
   logBox.ScrollBy(0, 999);
@@ -551,7 +574,7 @@ end;
 
 procedure TForm1.resetGame();
 var
-  i,PM: integer;
+  i, PM: integer;
 begin
   for i := 1 to 9 do
   begin
@@ -573,46 +596,82 @@ begin
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
-var jf: TextFile;
-js, t: string;
+var
+  jf: TextFile;
+  js, t: string;
 begin
   if shallRestartGame() then
   begin
-  lFl := ComboBox1.Items[ComboBox1.ItemIndex];
-  AssignFile(jf, lFl);
+    lFl := ComboBox1.Items[ComboBox1.ItemIndex];
+    AssignFile(jf, lFl);
 
-  try
-    Reset(jf);
-    while not EOF(jf) do
-    begin
-      readln(jf, t);
-      js := js + t;
+    try
+      Reset(jf);
+      while not EOF(jf) do
+      begin
+        readln(jf, t);
+        js := js + t;
+      end;
+
+      CloseFile(jf);
+
+      Q := TJSONObject(GetJSON(js));
+    except
+      on E: EInOutError do
+        ShowMessage('I/O Fehler!');
+      on F: EJSONParser do
+        ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
+      on G: EScannerError do
+        ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
     end;
-
-    CloseFile(jf);
-
-    Q := TJSONObject(GetJSON(js));
-  except
-    on E: EInOutError do
-      ShowMessage('I/O Fehler!');
-    on F: EJSONParser do
-      ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
-    on G: EScannerError do
-            ShowMessage('Fehler: Die ausgewählte Datei scheint keine JSON-Datei zu sein');
-  end;
-  resetGame();
+    resetGame();
   end
   else
-  ComboBox1.ItemIndex:= ComboBox1.Items.IndexOf(lFl);
+    ComboBox1.ItemIndex := ComboBox1.Items.IndexOf(lFl);
 end;
 
 procedure TForm1.Edit1Change(Sender: TObject);
-Var idk:String;
+var
+  idk: string;
 begin
-  //ShowMessage('Fucking Changed');
-  idk:=Edit1.Text;
+
+  idk := Edit1.Text;
   if idk <> '' then
-  Epsilon:=idk.ToDouble()/100;
+    Epsilon := idk.ToDouble() / 100;
+end;
+
+procedure TForm1.Edit2Change(Sender: TObject);
+begin
+  if (Edit2.Text <> 'O') or (Edit2.Text <> 'X') then
+  begin
+       ShowMessage('Entweder "X" oder "O"');
+       Edit2.Text:='O';
+  end
+end;
+
+procedure TForm1.Edit3Change(Sender: TObject);
+begin
+  if Edit3.text <> '' then
+  begin
+     temp:=Edit3.Text;
+       BWin:=RoundTo(temp.ToDouble / 100,-2);
+  end;
+end;
+
+procedure TForm1.Edit4Change(Sender: TObject);
+begin
+  if Edit4.text <> '' then
+  begin
+       BEqual:=RoundTo(Edit4.Text.ToDouble /100,-2);
+  end;
+end;
+
+procedure TForm1.Edit5Change(Sender: TObject);
+begin
+  if Edit5.text <> '' then
+  begin
+       BLose:=RoundTo(Edit5.Text.ToDouble()/100,-2);
+  end;
 end;
 
 procedure TForm1.InitQ();
@@ -620,15 +679,15 @@ var
   jf: TextFile;
   js, t: string;
   lFls: TStringList;
-  i: Integer;
+  i: integer;
 begin
-  lFls := FindAllFiles(GetCurrentDir, '*.json', false);
+  lFls := FindAllFiles(GetCurrentDir, '*.json', False);
   lFls.Sort;
-  For i := 0 To lFls.Count - 1 Do
+  for i := 0 to lFls.Count - 1 do
   begin
     ComboBox1.Items.Add(ExtractFileName(lFls[i]));
   end;
-  ComboBox1.ItemIndex:=0;
+  ComboBox1.ItemIndex := 0;
   lFl := ComboBox1.Items[0];
   AssignFile(jf, lFl);
 
@@ -662,7 +721,7 @@ begin
   pC := 'O';
   Form1.InitQ();
   randomize();
-  spielFertig:=False;
+  spielFertig := False;
   ro := TRegExpr.Create;
   rx := TRegExpr.Create;
   rx.Expression :=
@@ -706,13 +765,13 @@ begin
   if not AnsiContainsStr(state, '_') then
   begin
     if rx.Exec(state) then
-      Result := 1.0
+      Result := BWin
     else
     begin
       if ro.Exec(state) then
-        Result := -1.0
+        Result := BLose
       else
-        Result := 0.5;
+        Result := BEqual;
     end;
   end
   else
@@ -875,12 +934,12 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   InitGame();
   InitCC();
-  spiele:=0;
-  Epsilon:=0.2;
-  Edit1.Text:='20';
-  wins:=0;
-  loses:=0;
-  equal:=0;
+  spiele := 0;
+  Epsilon := 0.2;
+  Edit1.Text := '20';
+  wins := 0;
+  loses := 0;
+  equal := 0;
 end;
 
 procedure TForm1.Label1Click(Sender: TObject);
@@ -932,7 +991,8 @@ begin
 end;
 
 procedure TForm1.starterChange(Sender: TObject);
-var PM:integer;
+var
+  PM: integer;
 begin
   if shallRestartGame() then
   begin
@@ -958,6 +1018,7 @@ begin
     end;
   end;
 end;
+
 {
 procedure TForm1.training;
 Var randomI:Integer;
@@ -1071,27 +1132,30 @@ end;
   end;
  end; }
 procedure TForm1.prozente;
-Var e,l,w,prozent:Integer;
+var
+  e, l, w, prozent: integer;
 begin
-    l:=  Form1.Loses;
-  e:=Form1.Equal;
-  w:=Form1.Wins;
+  l := Form1.Loses;
+  e := Form1.Equal;
+  w := Form1.Wins;
   // ShowMessage((w+l+e).toString);
-   if (w+l+e)=0 then prozent:=0
-   else
-   begin
-  prozent:= ((l+e) div (w+l+e))* 100;
+  if (w + l + e) = 0 then
+    prozent := 0
+  else
+  begin
+    prozent := ((l + e) div (w + l + e)) * 100;
 
-   end;
-  Form1.Label4.Caption:=prozent.ToString + '%';
+  end;
+  Form1.Label4.Caption := prozent.ToString + '%';
 end;
 
 procedure TForm1.ToggleBox1Change(Sender: TObject);
-Var MyThread:TMyThread;
+var
+  MyThread: TMyThread;
 begin
 
-   MyThread := TMyThread.Create(True);
-   MyThread.Resume;
+  MyThread := TMyThread.Create(True);
+  MyThread.Resume;
 
 end;
 

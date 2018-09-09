@@ -24,6 +24,10 @@ type
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
     grdB: TLabel;
     grdC: TLabel;
     Button1: TButton;
@@ -43,12 +47,19 @@ type
     grd3: TLabel;
     GroupBox2: TGroupBox;
     Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     ListBox1: TListBox;
     logBox: TListBox;
     OpenDialog1: TOpenDialog;
@@ -62,6 +73,10 @@ type
     procedure cmdResetClick(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
+    procedure Edit2Change(Sender: TObject);
+    procedure Edit3Change(Sender: TObject);
+    procedure Edit4Change(Sender: TObject);
+    procedure Edit5Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure Label4Click(Sender: TObject);
@@ -110,9 +125,9 @@ var
   GRUN: boolean;
   rx, ro: TRegExpr;
   wx, wo, wn: integer;
-  pH, pC, lFl: string;
+  pH, pC, lFl, temp: string;
   begState, spielFertig: boolean;
-
+  BWin,BEqual,BLose:Double;
 
 
 
@@ -619,10 +634,46 @@ procedure TForm1.Edit1Change(Sender: TObject);
 var
   idk: string;
 begin
-  //ShowMessage('Fucking Changed');
+
   idk := Edit1.Text;
   if idk <> '' then
     Epsilon := idk.ToDouble() / 100;
+end;
+
+procedure TForm1.Edit2Change(Sender: TObject);
+begin
+  if (Edit2.Text <> 'O') or (Edit2.Text <> 'X') then
+  begin
+       ShowMessage('Entweder "X" oder "O"');
+       Edit2.Text:='O';
+  end
+end;
+
+procedure TForm1.Edit3Change(Sender: TObject);
+begin
+  if Edit3.text <> '' then
+  begin
+     temp:=Edit3.Text;
+       BWin:=RoundTo(temp.ToDouble / 100,-2);
+  end;
+end;
+
+procedure TForm1.Edit4Change(Sender: TObject);
+begin
+  if Edit4.text <> '' then
+  begin
+    temp:=Edit4.Text;
+       BEqual:=RoundTo(temp.ToDouble /100,-2);
+  end;
+end;
+
+procedure TForm1.Edit5Change(Sender: TObject);
+begin
+  if Edit5.text <> '' then
+  begin
+    temp:=Edit5.Text;
+       BLose:=RoundTo(temp.ToDouble/100,-2);
+  end;
 end;
 
 procedure TForm1.InitQ();
@@ -716,13 +767,13 @@ begin
   if not AnsiContainsStr(state, '_') then
   begin
     if rx.Exec(state) then
-      Result := 1.0
+      Result := BWin
     else
     begin
       if ro.Exec(state) then
-        Result := -1.0
+        Result := BLose
       else
-        Result := 0.5;
+        Result := BEqual;
     end;
   end
   else
