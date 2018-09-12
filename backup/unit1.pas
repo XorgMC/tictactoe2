@@ -796,7 +796,7 @@ begin
     if rx.Exec(state) then
       //Result := BWin
     begin
-      Result := 1.0
+      Result := 1.0;
       exit;
     end
     else
@@ -804,7 +804,7 @@ begin
       if ro.Exec(state) then
         //Result := BLose
       begin
-        Result := -1.0
+        Result := -1.0;
         exit;
       end
       else

@@ -287,16 +287,16 @@ begin
   begin
   rv := random(101) / 100;
   //ShowMessage('RV:' + rv.ToString);
-  //if rv < EPSILON then
+  if rv < EPSILON then
   if True then
   begin
-  useless:=GetRandomMove();
-     if useless = 0 then CheckBox2.Checked:=true;
-    Result :=useless ;
+  //useless:=GetRandomMove();
+   //  if useless = 0 then CheckBox2.Checked:=true;
+    Result :=GetRandomMove() ;
     exit;
   end
   else
-  ShowMessage('NAAAH');
+  //ShowMessage('NAAAH');
   end;
 
 
