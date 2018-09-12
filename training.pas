@@ -53,9 +53,10 @@ begin
   end
   else
   begin
-    randomI := Form1.GetQmove(Form1.Edit2.Text,true) + 1;
+    randomI :=Form1.GetQmove(Form1.Edit2.Text,false);//Form1.GetRandomMove();      //
+    //Form1.DebugMsg(randomI.ToString);
     case randomI of
-      1:
+      0:
       begin
         if Form1.Button1.Caption <> '' then
         begin
@@ -63,10 +64,11 @@ begin
         end
         else
         begin
+          Form1.CheckBox3.Checked:=true;
           Form1.Button1Click(Form1.Button1);
         end;
       end;
-      2:
+      1:
       begin
         if Form1.Button2.Caption <> '' then
         begin
@@ -77,7 +79,7 @@ begin
           Form1.Button1Click(Form1.Button2);
         end;
       end;
-      3:
+      2:
       begin
         if Form1.Button3.Caption <> '' then
         begin
@@ -88,7 +90,7 @@ begin
           Form1.Button1Click(Form1.Button3);
         end;
       end;
-      4:
+      3:
       begin
         if Form1.Button4.Caption <> '' then
         begin
@@ -99,7 +101,7 @@ begin
           Form1.Button1Click(Form1.Button4);
         end;
       end;
-      5:
+      4:
       begin
         if Form1.Button5.Caption <> '' then
         begin
@@ -110,7 +112,7 @@ begin
           Form1.Button1Click(Form1.Button5);
         end;
       end;
-      6:
+      5:
       begin
         if Form1.Button6.Caption <> '' then
         begin
@@ -121,7 +123,7 @@ begin
           Form1.Button1Click(Form1.Button6);
         end;
       end;
-      7:
+      6:
       begin
         if Form1.Button7.Caption <> '' then
         begin
@@ -132,7 +134,7 @@ begin
           Form1.Button1Click(Form1.Button7);
         end;
       end;
-      8:
+      7:
       begin
         if Form1.Button8.Caption <> '' then
         begin
@@ -143,7 +145,7 @@ begin
           Form1.Button1Click(Form1.Button8);
         end;
       end;
-      9:
+      8:
       begin
         if Form1.Button9.Caption <> '' then
         begin

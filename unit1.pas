@@ -22,6 +22,8 @@ type
     Button12: TButton;
     Button13: TButton;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     ComboBox1: TComboBox;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -99,7 +101,7 @@ type
     procedure InitQ();
     function GameStatus(): integer;
 
-    function GetRandomMove(): integer;
+
     procedure HandleMov(cBtn: TButton; pMark: string);
     procedure InitCC();
     function shallRestartGame(): boolean;
@@ -107,8 +109,9 @@ type
     procedure log(msg: string);
   public
     procedure resetGame();
-
+    function GetRandomMove(): integer;
     function GetQMove(pMark: string;isTrainer:Boolean): integer;
+    procedure DebugMsg(Texti:String);
   var
     Wins, Equal, Loses: integer;
     spiele: longint;
@@ -136,6 +139,8 @@ implementation
 {$R *.lfm}
 
 { TForm1 }
+
+
 
 {
   Gibt den Spielfeldknopf nach Nummer zurück (0=oben links, 1=oben mitte)
@@ -275,18 +280,26 @@ var
   rv: Float;
   curState: string;
   curStateKey: TJSONObject;
-  chMov, i: integer;
+  chMov, i,useless: integer;
   chBtn: TButton;
 begin
   if not isTrainer then
   begin
   rv := random(101) / 100;
-  if rv < EPSILON then
+  //ShowMessage('RV:' + rv.ToString);
+  //if rv < EPSILON then
+  if True then
   begin
-    Result := GetRandomMove();
+  useless:=GetRandomMove();
+     if useless = 0 then CheckBox2.Checked:=true;
+    Result :=useless ;
+    exit;
+  end
+  else
+  ShowMessage('NAAAH');
+  end;
 
-  end;
-  end;
+
 
     curState := BoardToString();
     curStateKey := ConsiderStateKey(curState, pMark);
@@ -299,11 +312,19 @@ begin
     if pMark = 'X' then
       chMov := KeyMaxs(curStateKey)
     else
-      chMov := KeyMins(curStateKey);
+      begin
+                chMov := KeyMins(curStateKey);
+               // SHowMessage('duuude');
+      end;
 
     Result := chMov;
 
 
+end;
+
+procedure TForm1.DebugMsg(Texti: String);
+begin
+  ShowMessage(Texti);
 end;
 
 {
@@ -322,6 +343,7 @@ begin
   begin
     log('Gewähltes Feld ' + NumToCoord(f) + ' ist belegt, suche anderes');
     Result := GetRandomMove();
+    exit;
   end
   else
   begin
@@ -640,7 +662,7 @@ begin
 
   idk := Edit1.Text;
   if idk <> '' then
-    Epsilon := idk.ToDouble() / 100;
+    Epsilon := RoundTo(idk.ToDouble() / 100,-2);
 end;
 
 procedure TForm1.Edit2Change(Sender: TObject);
@@ -658,6 +680,7 @@ begin
   begin
      temp:=Edit3.Text;
        BWin:=RoundTo(temp.ToDouble / 100,-2);
+       ShowMessage(BWin.ToString);
   end;
 end;
 
@@ -758,6 +781,7 @@ begin
     end;
     Q.Add(s, dVals);
     Result := dVals;
+    exit;
   end
   else
   begin
@@ -770,13 +794,26 @@ begin
   if not AnsiContainsStr(state, '_') then
   begin
     if rx.Exec(state) then
-      Result := BWin
+      //Result := BWin
+    begin
+      Result := 1.0;
+      exit;
+    end
     else
     begin
       if ro.Exec(state) then
-        Result := BLose
+        //Result := BLose
+      begin
+        Result := -1.0;
+        exit;
+      end
       else
-        Result := BEqual;
+        //Result := BEqual;
+        begin
+              Result := 0.5;
+              exit;
+        end;
+
     end;
   end
   else
@@ -804,13 +841,13 @@ end;
 
 function TForm1.KeyMins(sKey: TJSONObject): integer;
 var
-  i, rv: integer;
+  i, rv, j: integer;
   v: Float;
   p: TJSONArray;
 begin
   p := TJSONArray.Create;
   v := sKey.Items[0].AsFloat;
-  for i := 1 to sKey.Count - 1 do
+  for i := 0 to sKey.Count - 1 do
   begin
     if sKey.Items[i].AsFloat < v then
     begin
@@ -826,6 +863,11 @@ begin
 
   if p.Count = 0 then
     p.Add(0);
+
+  //for j := 0 to p.Count - 1 do
+  //begin
+  //  ShowMessage(sKey.Names[p.Integers[j]]);
+  //end;
 
   rv := Random(p.Count); //Funzt das?
 
@@ -854,7 +896,7 @@ var
 begin
   p := TJSONArray.Create;
   v := sKey.Items[0].AsFloat;
-  for i := 1 to sKey.Count - 1 do
+  for i := 0 to sKey.Count - 1 do
   begin
     if sKey.Items[i].AsFloat > v then
     begin
@@ -917,13 +959,13 @@ var
   i: integer;
 begin
   SetLength(x, 0);
-  for i := 1 to Length(curState) do
+  for i := 1 to Length(curState)-1 do
   begin
     if curState[i] = '_' then
     begin
       SetLength(x, Length(x) + 1);
       x[Length(x) - 1] := i;
-      //ShowMessage(IntToStr(i));
+      ShowMessage(IntToStr(i));
     end;
   end;
   Result := x;
@@ -984,6 +1026,7 @@ begin
   if GSt <> 0 then
   begin
     Result := True;
+    exit;
   end
   else
   begin
